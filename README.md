@@ -21,6 +21,9 @@ Shop-floor safety observations (near-misses, unsafe conditions, PPE violations) 
 | Backend | PHP (Core PHP) |
 | Database | MySQL |
 | Frontend | HTML5, CSS3, Bootstrap 5, Bootstrap Icons |
+
+
+
 | Charts | Chart.js |
 | QR generation | phpqrcode |
 | Local server | XAMPP (Apache + MySQL + PHP) |
