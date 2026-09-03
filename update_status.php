@@ -5,12 +5,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $report_id = $_POST['report_id'];
     $new_status = $_POST['status'];
 
-    $sql = "UPDATE reports SET status = '$new_status' WHERE report_id = '$report_id'";
-    mysqli_query($conn, $sql);
+    $stmt = $conn->prepare("UPDATE reports SET status = ? WHERE report_id = ?");
+    $stmt->bind_param("si", $new_status, $report_id);
+    $stmt->execute();
 
-    $log_sql = "INSERT INTO status_history (report_id, status, changed_by) 
-                VALUES ('$report_id', '$new_status', 'EHS Officer')";
-    mysqli_query($conn, $log_sql);
+    $log_stmt = $conn->prepare("INSERT INTO status_history (report_id, status, changed_by) VALUES (?, ?, 'EHS Officer')");
+    $log_stmt->bind_param("is", $report_id, $new_status);
+    $log_stmt->execute();
 
     header("Location: view_reports.php");
     exit;

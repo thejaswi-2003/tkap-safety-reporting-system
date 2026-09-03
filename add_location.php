@@ -4,8 +4,9 @@ include 'db_connect.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $location_name = $_POST['location_name'];
     $dept_id = $_POST['dept_id'];
-    $sql = "INSERT INTO locations (location_name, dept_id) VALUES ('$location_name', '$dept_id')";
-    mysqli_query($conn, $sql);
+            $stmt = $conn->prepare("INSERT INTO locations (location_name, dept_id) VALUES (?, ?)");
+        $stmt->bind_param("si", $location_name, $dept_id);
+        $stmt->execute();
 }
 
 $dept_result = mysqli_query($conn, "SELECT * FROM departments");
@@ -13,6 +14,7 @@ $dept_result = mysqli_query($conn, "SELECT * FROM departments");
 
 <?php include 'navbar.php'; ?>
 <?php include 'slogan.php'; ?>
+
 <div class="container mt-4" style="max-width:450px;">
     <h2 class="mb-4">Add Location</h2>
     <form method="POST">

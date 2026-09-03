@@ -1,5 +1,6 @@
 <?php
 include 'db_connect.php';
+include 'functions.php';
 
 $sql = "SELECT r.report_id, l.location_name, i.type_name, r.description, 
                r.reported_by, r.reported_at, r.status
@@ -9,6 +10,7 @@ $sql = "SELECT r.report_id, l.location_name, i.type_name, r.description,
         ORDER BY r.reported_at DESC";
 
 $result = mysqli_query($conn, $sql);
+$highlight_id = isset($_GET['highlight']) ? $_GET['highlight'] : null;
 ?>
 
 <?php include 'navbar.php'; ?>
@@ -28,8 +30,10 @@ $result = mysqli_query($conn, $sql);
             </tr>
         </thead>
         <tbody>
-        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-        <tr>
+               <?php while ($row = mysqli_fetch_assoc($result)) { 
+            $is_highlighted = ($highlight_id == $row['report_id']);
+        ?>
+        <tr id="report-<?php echo $row['report_id']; ?>" class="<?php echo $is_highlighted ? 'table-warning' : ''; ?>">
             <td><?php echo $row['report_id']; ?></td>
             <td><?php echo $row['location_name']; ?></td>
             <td><?php echo $row['type_name']; ?></td>
@@ -37,7 +41,7 @@ $result = mysqli_query($conn, $sql);
             <td><?php echo $row['reported_by']; ?></td>
             <td><?php echo $row['reported_at']; ?></td>
             <td>
-                <span class="badge bg-secondary mb-1"><?php echo $row['status']; ?></span><br>
+                                <span class="badge bg-<?php echo statusColor($row['status']); ?>-subtle text-<?php echo statusColor($row['status']); ?>-emphasis border border-<?php echo statusColor($row['status']); ?>-subtle mb-1"><?php echo $row['status']; ?></span><br>
                 <form method="POST" action="update_status.php" class="d-flex gap-1 mt-1">
                     <input type="hidden" name="report_id" value="<?php echo $row['report_id']; ?>">
                     <select name="status" class="form-select form-select-sm">
@@ -46,7 +50,7 @@ $result = mysqli_query($conn, $sql);
                         <option value="Action Taken">Action Taken</option>
                         <option value="Closed">Closed</option>
                     </select>
-                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                        <button type="submit" class="btn btn-sm btn-success">Update</button>
                 </form>
             </td>
         </tr>
@@ -54,3 +58,12 @@ $result = mysqli_query($conn, $sql);
         </tbody>
     </table>
 </div>
+ 
+<?php if ($highlight_id): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const el = document.getElementById('report-<?php echo $highlight_id; ?>');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+<?php endif; ?>

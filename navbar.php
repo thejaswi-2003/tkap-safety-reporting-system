@@ -14,6 +14,12 @@
 <li class="nav-item"><a class="nav-link" href="add_department.php"><i class="bi bi-building"></i> Add Department</a></li>
 <li class="nav-item"><a class="nav-link" href="add_location.php"><i class="bi bi-geo-alt"></i> Add Location</a></li>
 <li class="nav-item"><a class="nav-link" href="generate_qr.php"><i class="bi bi-qr-code"></i> QR Codes</a></li>
+<li class="nav-item"><a class="nav-link" href="check_status.php"><i class="bi bi-search"></i> Check Status</a></li>
+  <a class="nav-link position-relative" href="notifications.php">
+    <i class="bi bi-bell"></i> Notifications
+    <span id="notif-badge" class="badge bg-danger rounded-pill" style="display:none; position:relative; top:-8px;">0</span>
+  </a>
+</li>
       </ul>
     </div>
   </div>
@@ -21,3 +27,21 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+function updateNotifBadge() {
+    fetch('get_unread_count.php')
+        .then(res => res.text())
+        .then(count => {
+            const badge = document.getElementById('notif-badge');
+            count = parseInt(count);
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        });
+}
+updateNotifBadge();
+setInterval(updateNotifBadge, 15000);
+</script>

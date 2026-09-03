@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 include 'db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -7,16 +10,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $reported_by = $_POST['reported_by'];
 
-    $sql = "INSERT INTO reports (location_id, issue_type_id, description, reported_by, status) 
-            VALUES ('$location_id', '$issue_type_id', '$description', '$reported_by', 'Open')";
+    $stmt = $conn->prepare("INSERT INTO reports (location_id, issue_type_id, description, reported_by, status) VALUES (?, ?, ?, ?, 'Open')");
+    $stmt->bind_param("iiss", $location_id, $issue_type_id, $description, $reported_by);
 
-    if (mysqli_query($conn, $sql)) {
+    if ($stmt->execute()) {
+        $report_id = $stmt->insert_id;
+
+        $notif_msg = "New issue reported at location ID " . $location_id;
+        $notif_stmt = $conn->prepare("INSERT INTO notifications (report_id, message) VALUES (?, ?)");
+        $notif_stmt->bind_param("is", $report_id, $notif_msg);
+        $notif_stmt->execute();
+
         echo "<link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css' rel='stylesheet'>";
         echo "<div class='container mt-5 text-center'>";
-        echo "<div class='alert alert-success'><h4>Report submitted successfully. Thank you!</h4></div>";
+        echo "<div class='alert alert-success'>";
+        echo "<h4>Report submitted successfully. Thank you!</h4>";
+        echo "<p>Your Report ID is: <strong>#" . $report_id . "</strong></p>";
+        echo "<p>Save this ID to check your report's status later.</p>";
+        echo "<a href='check_status.php?report_id=" . $report_id . "' class='btn btn-primary mt-2'>Check Status Now</a>";
+        echo "</div>";
         echo "</div>";
     } else {
-        echo "Error: " . mysqli_error($conn);
+        echo "Error: " . $conn->error;
     }
 } else {
 
