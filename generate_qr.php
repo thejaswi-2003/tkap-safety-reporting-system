@@ -6,10 +6,9 @@ if (!file_exists('qrcodes')) {
     mkdir('qrcodes');
 }
 
-// Auto-detect the current server IP so QR codes work on any network
-// Hardcoded local network IP — update this if your PC's Wi-Fi IP changes (check via ipconfig)
-$host = "10.103.36.146";
-$base_url = "http://" . $host . "/safety-report";
+// Public URL of the deployed Render app
+$host = "tkap-safety-reporting-system.onrender.com";
+$base_url = "https://" . $host . "/safety-report";
 
 $locations = mysqli_query($conn, "SELECT * FROM locations");
 
@@ -22,18 +21,16 @@ while ($loc = mysqli_fetch_assoc($locations)) {
 }
 ?>
 
-
 <?php include 'navbar.php'; ?>
 <?php include 'slogan.php'; ?>
 <div class="container mt-4">
 
     <h2 class="mb-4">Generated QR Codes</h2>
     <div class="alert alert-success">QR codes generated successfully!</div>
-    <p class="text-muted">Server IP used for: <strong><?php echo htmlspecialchars($host); ?></strong></p>
+    <p class="text-muted">Server host used for: <strong><?php echo htmlspecialchars($host); ?></strong></p>
 
     <div class="row">
         <?php
-        // Re-run the query since the earlier $locations cursor is exhausted
         $locations_display = mysqli_query($conn, "SELECT * FROM locations");
         while ($loc = mysqli_fetch_assoc($locations_display)) {
             $location_id = $loc['location_id'];
