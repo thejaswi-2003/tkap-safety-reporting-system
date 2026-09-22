@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 include 'db_connect.php';
 include 'phpqrcode/qrlib.php';
 
