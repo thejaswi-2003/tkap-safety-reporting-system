@@ -8,7 +8,7 @@ if (!file_exists('qrcodes')) {
 
 // Public URL of the deployed Render app
 $host = "tkap-safety-reporting-system.onrender.com";
-$base_url = "https://" . $host . "/safety-report";
+$base_url = "https://" . $host;
 
 $locations = mysqli_query($conn, "SELECT * FROM locations");
 
